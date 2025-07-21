@@ -14,6 +14,7 @@ summary(data)
 data$ClaimNb = pmin(data$ClaimNb,4)   
 data$Exposure = pmin(data$Exposure,1) 
 
+
 # Feature pre-processing for GLM as numeric  :
 
 data3 = data
@@ -121,7 +122,7 @@ ll = function(pars){
 opt = optim(par =c(rep(0.001,5),-1, rep(-0.001,3)),fn = ll, method = "BFGS")
 
 #################################################################################
-# > opt Bell case. (results should improve on dummy-coding)
+# > opt Bell case. (results should improve on dummy-coding) 
 # $par
 # [1] -0.058907266 -0.825711077 -0.069375417  0.012374439 -0.023627158 -0.036957226 -0.186467433 -0.007628798
 # [9]  0.257658974
@@ -233,3 +234,210 @@ test = data2[-ll,]
 write.csv(learn, file = "/Users/debjyoti_mukherjee/Downloads/bell_learn.csv")
 write.csv(test, file = "/Users/debjyoti_mukherjee/Downloads/bell_test.csv")
 #################################################################################(python)
+library(rgdal)
+# library(rgeos)
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+library(corrplot)
+
+dat <- data %>% 
+  mutate(ClaimNb = as.integer(ClaimNb),
+         VehAge = pmin(VehAge, 20),
+         DrivAge = pmin(DrivAge, 90),
+         BonusMalus = round(pmin(BonusMalus, 150) / 10, 0) * 10,
+         Density = round(log(Density), 0),
+         VehGas = factor(VehGas))
+
+
+p1 <- ggplot(dat, aes(Exposure)) + geom_histogram()
+p2 <- ggplot(dat, aes(x = "Exposure", y = Exposure)) + geom_boxplot() +
+  labs(x = "Exposure", y = "frequency", title = "boxplot of exposure")
+p3 <- ggplot(dat, aes(ClaimNb)) + geom_histogram() +
+  labs(x = "number of claims", y = "frequency", title = "histogram of claims number")
+grid.arrange(p1, p2, p3, ncol = 2)
+
+
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+# Data manipulation
+dat <- data %>%
+  mutate(
+    ClaimNb = as.integer(ClaimNb),
+    VehAge = pmin(VehAge, 20),
+    DrivAge = pmin(DrivAge, 90),
+    BonusMalus = round(pmin(BonusMalus, 150) / 10, 0) * 10,
+    Density = round(log(Density), 0),
+    VehGas = factor(VehGas)
+  )
+
+# Plot 1: Enhanced histogram of Exposure with colors and bin customization
+p1 <- ggplot(dat, aes(x = Exposure)) +
+  geom_histogram(binwidth = 0.5, fill = "steelblue", color = "white", alpha = 0.7) +
+  labs(x = "Exposure", y = "Frequency", title = "Histogram of Exposure") +
+  theme_minimal()
+
+# Plot 2: Violin plot for Exposure with jitter for individual points
+p2 <- ggplot(dat, aes(x = "Exposure", y = Exposure)) +
+  geom_violin(fill = "lightgreen", alpha = 0.5) +
+  geom_jitter(width = 0.2, color = "darkgreen", alpha = 0.7) +
+  labs(x = "Exposure", y = "Values", title = "Violin Plot of Exposure") +
+  theme_classic()
+
+p3 <- ggplot(dat, aes(ClaimNb)) +
+  geom_histogram(binwidth = 1, alpha = 0.7) +
+  labs(x = "Number of Claims", y = "Frequency", title = "Histogram of Claims Number") +
+  theme_minimal()
+
+# Combine the plots
+grid.arrange(p1, p2, p3, ncol = 2)
+
+
+##
+
+runMultiPlot <- function(dat, VarName) {
+  dat <- rename(dat, "VarName" = all_of(VarName))
+  out_sum <- dat %>%
+    group_by(VarName) %>% 
+    summarize(NrObs = length(Exposure),
+              Exp = sum(Exposure),
+              Nr.Claims = sum(ClaimNb),
+              Freq = sum(ClaimNb) / sum(Exposure),
+              StDev = sqrt(sum(ClaimNb)) / sum(Exposure))
+  # Plot 1
+  p1 <- ggplot(out_sum, aes(x = VarName, y = Exp, fill = VarName)) +
+    geom_bar(stat = "identity") +
+    geom_text(stat = 'identity', aes(label = round(Exp, 0), color = VarName), vjust = -0.5, size = 2.5) +
+    labs(x = VarName, y = "Exposure in years", title = "exposure") + theme(legend.position = "none")
+  
+  # Plot 2
+  p2 <- ggplot(out_sum, aes(x = VarName, group = 1)) + geom_point(aes(y = Freq, colour = "observed")) +
+    geom_line(aes(y = Freq, colour = "observed"), linetype = "dashed") +
+    geom_line(aes(x = as.numeric(VarName), y = pf_freq), color = "red") +
+    geom_line(aes(x = as.numeric(VarName), y = Freq + 2 * StDev), color = "red", linetype = "dotted") +
+    geom_line(aes(x = as.numeric(VarName), y = Freq - 2 * StDev), color = "red", linetype = "dotted") +
+    ylim(0, 0.35) + 
+    labs(x = paste(VarName, "groups"), y = "frequency", title = "observed frequency") + theme(legend.position = "none")
+  
+  # Plot 3
+  p3 <- ggplot(out_sum) + geom_bar(stat = "identity", aes(x = VarName, y = Freq, fill = VarName)) +
+    geom_line(aes(x = as.numeric(VarName), y = pf_freq), color = "red") + guides(fill = FALSE) +
+    labs(x = paste(VarName, "groups"),  y = "frequency", title = "observed frequency") + theme(legend.position = "bottom")
+  
+  grid.arrange(p1, p2, p3, ncol = 2)
+}
+
+
+p3 <- ggplot(dat, aes(ClaimNb)) +
+  geom_histogram(binwidth = 1, alpha = 0.7,fill = "lightgray",color = 'black' ) +
+  scale_x_continuous(breaks = seq(0, max(dat$ClaimNb, na.rm = TRUE), by = 1)) + # Exact x values
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) + # Adjust frequency scale
+  labs(x = "Number of Claims", y = "Frequency", title = "Histogram of Claims Number") +
+  theme_minimal()
+
+p3
+
+
+p1 <- ggplot(dat, aes(Exposure)) +
+  geom_histogram(binwidth = 0.1, fill = "lightgray",color = 'black', alpha = 0.7) +
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) + # Adjust x-axis breaks for Exposure
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) + # Adjust frequency scale
+  labs(x = "Exposure", y = "Frequency", title = "Histogram of Exposure") +
+  theme_minimal()
+
+p1
+
+p2 <- ggplot(dat, aes(x = "Exposure", y = Exposure)) +
+  geom_boxplot(fill = "lightgray", color = "black", alpha = 0.7) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) + # Adjust y-axis scale
+  labs(x = "", y = "Exposure", title = "Boxplot of Exposure") +
+  theme_minimal()
+
+p2
+
+
+grid.arrange(p1, p2, p3, ncol= 3)
+
+ggsave("multipanel_plot.png", grid.arrange(p1, p2, p3, ncol= 3), width = 12, height = 4, units = "in", dpi = 300) 
+
+
+
+
+# Load required packages
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+# Summarize data
+summary_stats <- data3%>%
+  summarise(
+    Total_Policies = n(),
+    Mean_ClaimNb = mean(ClaimNb, na.rm = TRUE),
+    Median_ClaimNb = median(ClaimNb, na.rm = TRUE),
+    Max_ClaimNb = max(ClaimNb, na.rm = TRUE),
+    Mean_Exposure = mean(Exposure, na.rm = TRUE),
+    Median_Exposure = median(Exposure, na.rm = TRUE),
+    Max_Exposure = max(Exposure, na.rm = TRUE),
+    Mean_VehAge = mean(VehAge, na.rm = TRUE),
+    Median_VehAge = median(VehAge, na.rm = TRUE),
+    Max_VehAge = max(VehAge, na.rm = TRUE),
+    Mean_DrivAge = mean(DrivAge, na.rm = TRUE),
+    Median_DrivAge = median(DrivAge, na.rm = TRUE),
+    Max_DrivAge = max(DrivAge, na.rm = TRUE),
+    Mean_BonusMalus = mean(BonusMalus, na.rm = TRUE),
+    Median_BonusMalus = median(BonusMalus, na.rm = TRUE),
+    Max_BonusMalus = max(BonusMalus, na.rm = TRUE),
+    Mean_Density = mean(Density, na.rm = TRUE),
+    Median_Density = median(Density, na.rm = TRUE),
+    Max_Density = max(Density, na.rm = TRUE)
+  )
+
+# Summary for categorical variables
+categorical_summary <- df %>%
+  select(Area, VehPower, VehBrand, VehGas, Region) %>%
+  summarise_all(~ list(table(.))) %>%
+  pivot_longer(cols = everything(), names_to = "Variable", values_to = "Counts")
+
+# Create plots (examples for key variables)
+ggplot(df, aes(x = ClaimNb)) +
+  geom_histogram(binwidth = 1, fill = "blue", alpha = 0.7) +
+  labs(title = "Histogram of ClaimNb", x = "Number of Claims", y = "Frequency")
+
+ggplot(df, aes(x = Area)) +
+  geom_bar(fill = "orange", alpha = 0.7) +
+  labs(title = "Distribution of Area", x = "Area", y = "Count")
+
+# Save plots as images for inclusion in LaTeX
+ggsave("ClaimNb_Histogram.png")
+ggsave("Area_Distribution.png")
+
+
+# Load necessary libraries
+library(dplyr)
+library(tidyr)
+
+# Select only numeric and integer columns
+numeric_cols <- data %>% select(where(is.numeric))
+
+# Compute summary statistics for all numeric and integer columns
+summary_stats_all <- numeric_cols %>%
+  summarise(across(
+    everything(),
+    list(
+      Mean = ~mean(.x, na.rm = TRUE),
+      Median = ~median(.x, na.rm = TRUE),
+      Min = ~min(.x, na.rm = TRUE),
+      Max = ~max(.x, na.rm = TRUE),
+      SD = ~sd(.x, na.rm = TRUE)
+    ),
+    .names = "{col}_{fn}"
+  ))
+
+# Reshape summary_stats_all to a long format for easier readability
+summary_stats_long <- summary_stats_all %>%
+  pivot_longer(everything(), names_to = c("Variable", ".value"), names_sep = "_")
+
+# Print the summary statistics
+print(summary_stats_long)
