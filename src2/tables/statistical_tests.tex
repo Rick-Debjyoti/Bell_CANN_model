@@ -1,0 +1,17 @@
+\begin{table}
+\caption{Statistical tests for model comparison. LR: Likelihood Ratio (nested); Vuong: non-nested; Clarke: sign-based. Model 1 listed first in each test.}
+\label{tab:stat_tests}
+\begin{tabular}{llllll}
+\toprule
+Test & Type & Statistic & p-value & Result \\
+\midrule
+Bell vs ZI-Bell (GLM) & LR & 279.90 & 2.73e-54 & Signif. at 1\% \\
+Poisson vs ZIP (GLM) & LR & 413.40 & 1.32e-82 & Signif. at 1\% \\
+Bell vs Poisson (GLM) & Vuong & 3.10 & 1.94e-03 & Model 1 \\
+ZI-Bell vs ZIP (GLM) & Vuong & -4.75 & 2.06e-06 & Model 2 \\
+Bell vs NegBin (GLM) & Vuong & -9.68 & 3.50e-22 & Model 2 \\
+Bell vs Poisson (GLM) & Clarke & 42968 vs 24833 & $< 10^{-300}$ & Model 1 \\
+ZI-Bell vs ZIP (GLM) & Clarke & 25943 vs 41858 & $< 10^{-300}$ & Model 2 \\
+\bottomrule
+\end{tabular}
+\end{table}

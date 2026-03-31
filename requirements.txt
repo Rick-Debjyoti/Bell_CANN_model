@@ -1,9 +1,13 @@
-numpy==1.24.4
-pandas==1.3.5
-scipy==1.10.1
-scikit-learn==1.2.1
-keras==2.9.0
-matplotlib==3.4.3
-seaborn==0.12.1
-tensorflow==2.9.0
-tensorflow-probability==0.17.0
+# Conda environment pinned versions (TF 2.10 required for GPU on Windows)
+# Install via conda first: cudatoolkit=11.2 cudnn=8.1
+# Then pip install inside the conda env:
+tensorflow==2.10.0
+tensorflow-probability==0.18.0
+keras==2.10.0
+numpy==1.26.4
+pandas==2.3.3
+scipy==1.15.3
+scikit-learn==1.7.2
+matplotlib==3.10.8
+seaborn==0.13.2
+optuna==4.7.0

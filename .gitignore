@@ -1,3 +1,15 @@
 .DS_Store
-
-Reports/notes.txt
+temp/
+.conda_env/
+.venv/
+venv/
+__pycache__/
+*.pyc
+D:/pip_cache/
+saved_models/
+src2/python/training_histories/training_histories
+cv_progress.json
+*.h5
+Reports
+src2/R/bell_learn.csv
+src2/R/bell_test.csv

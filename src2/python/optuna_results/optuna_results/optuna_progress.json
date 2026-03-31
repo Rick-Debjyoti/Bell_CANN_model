@@ -1,0 +1,38 @@
+{
+  "Poisson_NN": {
+    "trial": 6,
+    "n_trials": 35,
+    "best_deviance": 0.3022059391621821,
+    "status": "running",
+    "timestamp": "2026-03-20 09:16:02"
+  },
+  "_last_update": "2026-03-20 10:48:24",
+  "Bell_CANN": {
+    "trial": 40,
+    "n_trials": 40,
+    "best_deviance": 0.2689017383551851,
+    "status": "completed",
+    "timestamp": "2026-03-20 09:46:43"
+  },
+  "ZIP_CANN": {
+    "trial": 25,
+    "n_trials": 25,
+    "best_deviance": 0.3019549497343052,
+    "status": "completed",
+    "timestamp": "2026-03-20 10:04:49"
+  },
+  "ZINB_CANN": {
+    "trial": 25,
+    "n_trials": 25,
+    "best_deviance": 0.2725986778165549,
+    "status": "completed",
+    "timestamp": "2026-03-20 10:18:37"
+  },
+  "ZIBell_CANN": {
+    "trial": 40,
+    "n_trials": 40,
+    "best_deviance": 0.268275706912516,
+    "status": "completed",
+    "timestamp": "2026-03-20 10:48:24"
+  }
+}

@@ -1,0 +1,20 @@
+name: bell_cann
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - cudatoolkit=11.2
+  - cudnn=8.1
+  - pip
+  - pip:
+    - tensorflow==2.10.0
+    - tensorflow-probability==0.18.0
+    - keras==2.10.0
+    - numpy==1.26.4
+    - pandas==2.3.3
+    - scipy==1.15.3
+    - scikit-learn==1.7.2
+    - matplotlib==3.10.8
+    - seaborn==0.13.2
+    - optuna==4.7.0

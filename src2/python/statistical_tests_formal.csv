@@ -1,0 +1,12 @@
+Test,LR_statistic,df,p_value,significant_5pct,significant_1pct,vuong_statistic,preferred,mean_diff,std_diff,n_model1_better,n_model2_better,n_ties
+LR: Bell vs ZI-Bell (GLM),279.90347301235306,10.0,2.728575479625807e-54,True,True,,,,,,,
+LR: Poisson vs ZIP (GLM),413.4036578193263,10.0,1.3187034259230547e-82,True,True,,,,,,,
+LR: NegBin vs ZINB (GLM),42.76677437555554,10.0,5.47389432399168e-06,True,True,,,,,,,
+Vuong: Bell vs Poisson (GLM),,,0.0019377341716120666,,,3.099613350081354,Model 1,0.0003994966958333013,0.03356013650372964,,,
+Clarke: Bell vs Poisson (GLM),,,0.0,,,,Model 1,,,42968.0,24833.0,0.0
+Vuong: Bell vs NegBin (GLM),,,3.497978288348461e-22,,,-9.684827704018877,Model 2,-0.0024921065790446104,0.06700277076990661,,,
+Clarke: Bell vs NegBin (GLM),,,9.261661995026818e-80,,,,Model 2,,,31439.0,36362.0,0.0
+Vuong: ZI-Bell vs ZIP (GLM),,,2.0593612707426828e-06,,,-4.747510082688387,Model 2,-0.0005850034207356131,0.0320856291446182,,,
+Clarke: ZI-Bell vs ZIP (GLM),,,0.0,,,,Model 2,,,25943.0,41858.0,0.0
+Vuong: ZI-Bell vs ZINB (GLM),,,8.236688504201214e-06,,,-4.458937622661448,Model 2,-0.000743336659450458,0.04340824267548587,,,
+Clarke: ZI-Bell vs ZINB (GLM),,,0.0,,,,Model 2,,,28070.0,39731.0,0.0
